@@ -4,7 +4,7 @@ public class PlayerController : MonoBehaviour
 {
     // Movimiento
     public float velocidad = 8f;
-    public float fuerzaSalto = 10f;
+    public float fuerzaSalto = 5f;
 
     // Estado
     private bool estaEnSuelo = true;

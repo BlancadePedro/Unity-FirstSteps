@@ -2,14 +2,19 @@ using UnityEngine;
 
 public class CamaraFollow : MonoBehaviour
 {
-    public Transform objetivo; // El Player
-    public Vector3 offset = new Vector3(0, 15, -10); // Distancia de la cámara
-    public float suavidad = 5f; // Qué tan suave sigue (menor = más suave)
-    public bool mirarAlObjetivo = true; // Si debe mirar siempre al jugador
+    public Transform objetivo;
+    public Vector3 offset = new Vector3(0, 6, -6); // Más cerca para ver el shake
+    public float suavidad = 5f;
+    public bool mirarAlObjetivo = true;
+
+    // Variables del shake
+    private float shakeDuracion = 0f;
+    private float shakeMagnitud = 0.3f;
+    private float shakeDampening = 1.0f;
+    private Vector3 posicionOriginal;
 
     void Start()
     {
-        // Si no se asignó objetivo, buscar al Player automáticamente
         if (objetivo == null)
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -19,11 +24,10 @@ public class CamaraFollow : MonoBehaviour
             }
             else
             {
-                Debug.LogError("¡No se encontró el Player! Asegúrate de que tenga el Tag 'Player'");
+                Debug.LogError("¡No se encontró el Player!");
             }
         }
-        
-        // Calcular el offset inicial basado en la posición actual
+
         if (objetivo != null)
         {
             offset = transform.position - objetivo.position;
@@ -33,17 +37,30 @@ public class CamaraFollow : MonoBehaviour
     void LateUpdate()
     {
         if (objetivo == null) return;
-        
-        // Calcular la posición deseada
+
         Vector3 posicionDeseada = objetivo.position + offset;
-        
-        // Mover suavemente hacia esa posición
+
+        // Aplicar shake
+        if (shakeDuracion > 0)
+        {
+            posicionDeseada += Random.insideUnitSphere * shakeMagnitud;
+            shakeDuracion -= Time.deltaTime * shakeDampening;
+        }
+
+        // Mover cámara suavemente
         transform.position = Vector3.Lerp(transform.position, posicionDeseada, suavidad * Time.deltaTime);
-        
-        // Opcional: Siempre mirar al jugador
+
+        // Mirar al jugador
         if (mirarAlObjetivo)
         {
-            transform.LookAt(objetivo.position + Vector3.up * 1f); // +1 en Y para mirar al centro del personaje
+            transform.LookAt(objetivo.position + Vector3.up * 1f);
         }
+    }
+
+    // Función para activar el shake
+    public void Shake(float duracion, float magnitud)
+    {
+        shakeDuracion = duracion;
+        shakeMagnitud = magnitud;
     }
 }

@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     // Variables del juego
-    public int vidaMaxima = 3;
+    public int vidaMaxima = 10;
     public int vidaActual;
     public int puntos = 0;
     public float tiempoRestante = 60f;
@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI textoTiempo;
     public GameObject panelGameOver;
     public GameObject panelVictoria;
-
+    public GameObject panelInstrucciones; // NUEVO
     void Awake()
     {
         // Singleton pattern
@@ -36,10 +36,24 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         vidaActual = vidaMaxima;
-        ActualizarUI();
+        juegoActivo = false; // NUEVO: No empieza activo
+
+        // Mostrar instrucciones
+        if (panelInstrucciones) panelInstrucciones.SetActive(true);
 
         if (panelGameOver) panelGameOver.SetActive(false);
         if (panelVictoria) panelVictoria.SetActive(false);
+
+        Time.timeScale = 0; // NUEVO: Pausar hasta que den a empezar
+        ActualizarUI();
+    }
+
+    public void EmpezarJuego()
+    {
+        if (panelInstrucciones) panelInstrucciones.SetActive(false);
+        juegoActivo = true;
+        Time.timeScale = 1; // Reanudar el tiempo
+        Debug.Log("¡Juego iniciado!");
     }
 
     void Update()
